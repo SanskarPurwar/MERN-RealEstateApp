@@ -13,7 +13,7 @@ function Header() {
             </Link>
             <form className='bg-blue-100 p-2 rounded-lg flex items-center'>
                 <input className='bg-transparent focus:outline-none w-24 sm:w-64' type="text" placeholder='search city' />
-                <FaSearch className="text-slate-700"/>
+                <FaSearch className="text-slate-700 hover:cursor-pointer"/>
             </form>
             <ul className="flex gap-4 ">
               <Link to='/'>
