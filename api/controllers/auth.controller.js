@@ -46,7 +46,7 @@ export const signIn = async (req, res ,next)=>{
             return next(errorHandler(500, 'Internal Error while finally creating loggedInUser'));
         }
 
-        const token = jwt.sign({it:user._id} ,process.env.JWT_SECRET)
+        const token = jwt.sign({id:user._id} ,process.env.JWT_SECRET)
         res.cookie('access_token', token , {httpOnly:true , expires: new Date(Date.now() + 24*60*60*100 )})
         .status(200)
         .json(loggedInUser) ;
@@ -55,4 +55,33 @@ export const signIn = async (req, res ,next)=>{
         next(error);
     }
     
+}
+
+export const signInWithGoogle = async (req, res, next)=>{
+    const { name : username , email, photo } = req.body;
+    try {
+        const user = await User.findOne({email});
+        if(user){
+            const token = jwt.sign({id:user._id} ,process.env.JWT_SECRET);
+            const {password: pass, ...rest} = user._doc;
+            res.cookie('access_token', token , {httpOnly:true , expires: new Date(Date.now() + 24*60*60*100 )})
+            .status(200)
+            .json(rest) ;
+        }
+        else{
+            const generatePassword = Math.random().toString(36).slice(-8); 
+            const hashedPassword = bcryptjs.hashSync(generatePassword, 10);
+            const newUser = new User({username : username.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4), 
+                                        email , password: hashedPassword, avatar: photo});
+            await newUser.save();
+            const token = jwt.sign({id: newUser._id} , process.env.JWT_SECRET);
+            const {password: pass, ...rest} = newUser._doc;
+            res.cookie('access_token' , token ,{httpOnly:true })
+                .status(200)
+                .json(rest);
+        }
+
+    } catch (error) {
+        next(error);
+    }
 }
