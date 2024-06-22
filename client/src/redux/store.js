@@ -1,8 +1,10 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import useReducer from './user/userSlice.js';
+// npm i redux-persist
 import {persistReducer} from 'redux-persist'; 
 import persistStore from 'redux-persist/es/persistStore';
 import storage from 'redux-persist/lib/storage';
+
 
 const rootReducer = combineReducers({user: useReducer})
 

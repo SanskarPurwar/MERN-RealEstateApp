@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     },
     avatar :{
         type: String,
-        default: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fprofile-image&psig=AOvVaw0lQiVeAFHiQd8rQKS-LXcc&ust=1718610241558000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNj_5JzQ34YDFQAAAAAdAAAAABAE"
+        default: "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=600"
     }
 }, {timestamps : true})
 

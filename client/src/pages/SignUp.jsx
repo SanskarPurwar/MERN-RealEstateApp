@@ -51,11 +51,11 @@ function SignUp() {
 
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-center text-2xl font-semibold my-8'>Sign Up</h1>
-      <form className='flex flex-col gap-3'>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
         <input onChange={handleChange} className='border rounded-lg p-2' type="text" placeholder='Username' id='username' />
         <input onChange={handleChange} className='border rounded-lg p-2' type="email" placeholder='Email' id='email' />
         <input onChange={handleChange} className='border rounded-lg p-2' type="password" placeholder='Password' id='password' />
-        <button disabled={loading} onClick={handleSubmit} className='border rounded-lg bg-red-500 hover:opacity-90 p-2 disabled:opacity-65'>{loading?'loading..':'SignUp'}</button>
+        <button disabled={loading} className='border rounded-lg bg-red-500 hover:opacity-90 p-2 disabled:opacity-65'>{loading?'loading..':'SignUp'}</button>
         <OAuth/>
       </form>
 

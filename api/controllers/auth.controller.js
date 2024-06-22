@@ -61,6 +61,7 @@ export const signInWithGoogle = async (req, res, next)=>{
     const { name : username , email, photo } = req.body;
     try {
         const user = await User.findOne({email});
+        console.log('user', user);
         if(user){
             const token = jwt.sign({id:user._id} ,process.env.JWT_SECRET);
             const {password: pass, ...rest} = user._doc;
@@ -84,4 +85,25 @@ export const signInWithGoogle = async (req, res, next)=>{
     } catch (error) {
         next(error);
     }
+}
+
+export const updateProfileAvatar = async (req, res, next)=>{
+    const {username , avatar} = req.body;
+    const updateAvatar = await User.updateOne({username} , {avatar} );
+    
+    if(!updateAvatar){
+        next(500, 'Internal Error');
+        return;
+    }
+    res.status(200).send('User Avatar Updated');
+
+}
+
+export const signOut = async (req , res , next)=>{
+    try {
+        res.clearCookie('access_token');
+        res.status(200).json('User has been logged out!');
+      } catch (error) {
+        next(error);
+      }
 }
