@@ -11,7 +11,7 @@ const connectDB = async () => {
         console.log(`\n MongoDB connected !! DB host : ${connectionInstance.connection.host}`)
         
     } catch (error) {
-        console.error('Error: ', error);
+        console.error('Error is: ', error);
         process.exit(1);
     }
 }
@@ -33,9 +33,11 @@ app.listen(3000 , ()=>{
 
 import userRouter from './routes/user.route.js'
 import authRouter from './routes/auth.route.js'
+import listingRouter from './routes/listing.route.js'
 
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/listing', listingRouter);
 
 
 app.use( (err, req, res, next )=>{

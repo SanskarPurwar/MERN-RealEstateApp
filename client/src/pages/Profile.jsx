@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../firebase';
 import { deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserFailure, signOutUserStart, signOutUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice';
-
+import { Link } from 'react-router-dom';
 
 function Profile() {
   const dispatch = useDispatch();
@@ -15,6 +15,7 @@ function Profile() {
   const [uploadError, setUploadError] = useState(false);
   const [updated, setUpdated ] = useState(false);
 
+  
   console.log(formData);
 
 
@@ -81,7 +82,7 @@ function Profile() {
       },
       (error) => { setUploadError(true); },
 
-      () => {
+      () => { 
         getDownloadURL(uploadFile.snapshot.ref).then
         ((downloadURL) => {
           setFormData({ ...formData, avatar: downloadURL })
@@ -171,8 +172,11 @@ function Profile() {
               'Update'
           }
         </button>
-        <input className='border rounded-xl p-2 bg-amber-500 hover:opacity-90 cursor-pointer hover:py-2.5 disabled:opacity-60' type="button" value="Create Listing" />
+        <Link className='text-center border rounded-xl p-2 bg-amber-500 hover:opacity-90 cursor-pointer hover:py-2.5 disabled:opacity-60' to = '/createListing'>
+            Create Listings
+        </Link>
       </form>
+
       <div className='flex justify-between mt-4 text-red-500'>
         <button onClick={handleDelete}>Delete Account</button>
         <button onClick={handleSignOut}>Sign Out</button>
