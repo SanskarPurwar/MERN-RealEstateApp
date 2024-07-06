@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import {useEffect, useRef, useState } from 'react'
 import { FaFireExtinguisher, FaKitchenSet } from 'react-icons/fa6';
 import { PiBathtubFill, PiTelevisionFill } from 'react-icons/pi';
 import { BiSolidWasher, BiImageAdd, BiSolidFirstAid, BiWifi, BiSolidFridge, BiSolidDryer } from 'react-icons/bi';
@@ -12,12 +12,14 @@ import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Modal from 'react-modal';
 import { FaParking } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 Modal.setAppElement('#root');
 
-function CreateListing() {
+
+
+function UpdateListing() {
     const fileRef = useRef(null);
     const [files, setFiles] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,6 +28,7 @@ function CreateListing() {
     const [uploadImageError, setUploadImageError] = useState(false);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
+    const params = useParams();
     const {currentUser} = useSelector(state=>state.user)
     const navigate = useNavigate();
 
@@ -46,7 +49,6 @@ function CreateListing() {
         discountedPrice: 30,
         discount: false,
     })
-
     const perks = [
         { icon: <FaFireExtinguisher className='w-7 h-7 my-2' />, name: 'Fire Extinguisher' },
         { icon: <PiBathtubFill className='w-7 h-7 my-2' />, name: 'Bath tub' },
@@ -64,6 +66,72 @@ function CreateListing() {
         { icon: <TbMicrowave className='w-7 h-7 my-2' />, name: 'Microwave' },
         { icon: <GiBarbecue className='w-7 h-7 my-2' />, name: 'Barbecue' },
     ];
+    
+    useEffect(()=>{        
+        const getData = async (req,res,next)=>{
+
+            const listingId = params.listingId;
+            setError(false);
+            try {
+                const response = await fetch(`/api/listing/getListing/${listingId}`);
+                const data = await response.json();
+                if(data.success === false){
+                    setError(data.message);
+                    return;
+                }
+                setFormData(data);
+                console.log(data);
+                return;
+            } catch (error) {
+                setError(error.message);
+            }
+        }
+        getData();
+    }, [])
+
+    
+    const handleSubmit = async (e)=>{
+        e.preventDefault();
+        setError(false);
+        try {
+            if(formData.imageUrls.length < 1){
+                return setError('Upload atleast one image');
+            }
+            
+            if(formData.discount && formData.regularPrice < formData.discountedPrice){
+                return setError('Discounted Price Should be less than Regular Price')
+            }
+            if(!currentUser){
+                return setError('User Not Logged In');
+            }
+            
+            setLoading(true);
+            setError(false); 
+            const listingId = params.listingId;
+            const response = await fetch(`/api/listing/updateListing/${listingId}`, {
+                method: 'PATCH',
+                headers : {
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    ...formData,
+                    userRef: currentUser._id
+                }),
+            });
+            const data = await response.json();
+            if(response.success === false){
+                setLoading(false);
+                return setError(data.message);
+            }
+            console.log(data);
+            setLoading(false);
+            navigate(`/listing/${data._id}`);
+            setError(false);
+        } catch (error) {
+            setError(error.message);
+            setLoading(false);
+        }
+    }
 
     const openModal = (index) => {
         setCurrentImageIndex(index);
@@ -134,13 +202,6 @@ function CreateListing() {
 
     }
 
-    const handleDelete = (urlToDelete)=>{
-        setFormData((formData)=>({
-            ...formData,
-            imageUrls:formData.imageUrls.filter( url=> url!=urlToDelete )
-        }))
-    }
-
     const handlePerks = (index)=>{
         if(formData.selectedPerks.includes(index)){
             console.log("selected Perks",formData.selectedPerks)
@@ -188,51 +249,10 @@ function CreateListing() {
             }
     } 
 
-    const handleSubmit = async (e)=>{
-        e.preventDefault();
-        setError(false);
-        try {
-            if(formData.imageUrls.length < 1){
-                return setError('Upload atleast one image');
-            }
-            
-            if(formData.discount && formData.regularPrice < formData.discountedPrice){
-                return setError('Discounted Price Should be less than Regular Price')
-            }
-            if(!currentUser){
-                return setError('User Not Logged In');
-            }
-            
-            setLoading(true);
-            setError(false); 
-            const response = await fetch('/api/listing/create', {
-                method: 'POST',
-                headers : {
-                    'Content-Type': 'application/json',
-                },
-                body:JSON.stringify({
-                    ...formData,
-                    userRef: currentUser._id
-                }),
-            });
-            const data = await response.json();
-            if(response.success === false){
-                setLoading(false);
-                return setError(data.message);
-            }
-            setLoading(false);
-            navigate(`/listing/${data._id}`);
-            setError(false);
-        } catch (error) {
-            setError(error.message);
-            setLoading(false);
-        }
-    }
+  return (
+    <main className='max-w-7xl mx-auto my-6' >
 
-    return (
-        <main className='max-w-7xl mx-auto my-6' >
-
-            <h1 className='text-center font-semibold text-3xl my-5'>Publish Your Place</h1>
+            <h1 className='text-center font-semibold text-3xl my-5'>Update Post</h1>
 
             <form onSubmit={handleSubmit} className='flex flex-col gap-7 flex-wrap place-content-center'>
 
@@ -240,15 +260,15 @@ function CreateListing() {
                     <div className='flex flex-col gap-3 max-w-xl content-center'>
                         <h2 className='text-lime-600 font-semibold self-center' >Tell About Your Place</h2>
 
-                        <input onChange={handleChange} className='p-3 border rounded-lg' type="text" id='title' placeholder='Title' minLength={10} maxLength={50} required />
-                        <textarea onChange={handleChange} className='p-3 border rounded-lg' type='text' placeholder='Description' id='description' required />
+                        <input onChange={handleChange} value={formData.title} className='p-3 border rounded-lg' type="text" id='title' placeholder='Title' minLength={10} maxLength={50} required />
+                        <textarea onChange={handleChange}  value={formData.description}   className='p-3 border rounded-lg' type='text' placeholder='Description' id='description' required />
 
                         <h2 className='text-rose-700 font-semibold self-center' >What's your place located</h2>
                         <div onChange={handleChange} className='grid grid-cols-2 md:grid-cols-3 gap-3'>
-                            <input className='p-3 border rounded-lg' type="text" id='streetAddress' placeholder='Street Address' />
-                            <input className='p-3 border rounded-lg' type="text" id='city' placeholder='City' />
-                            <input className='p-3 border rounded-lg' type="text" id='state' placeholder='State' />
-                            <input className='p-3 border rounded-lg' type="text" id='country' placeholder='Country' />
+                            <input value={formData.streetAddress} className='p-3 border rounded-lg' type="text" id='streetAddress' placeholder='Street Address' />
+                            <input value={formData.city} className='p-3 border rounded-lg' type="text" id='city' placeholder='City' />
+                            <input value={formData.state} className='p-3 border rounded-lg' type="text" id='state' placeholder='State' />
+                            <input value={formData.country} className='p-3 border rounded-lg' type="text" id='country' placeholder='Country' />
                         </div>
 
                         <div className='flex gap-12 items-center'>
@@ -261,7 +281,7 @@ function CreateListing() {
                                 <span>Rent</span>
                             </div>
                             <div className='flex gap-3 items-center'>
-                                <input onChange={handleChange} type="checkbox" name="furnished" id="furnished" />
+                                <input onChange={handleChange} checked={formData.furnished} type="checkbox" name="furnished" id="furnished" />
                                 <span>Furnished</span>
                             </div>
 
@@ -269,12 +289,12 @@ function CreateListing() {
 
                         <div className='flex flex-wrap gap-3'>
                             <div className='flex items-center gap-2'>
-                                <input onChange={handleChange} className='p-3 border border-gray-300 rounded-lg w-16' defaultValue={1} min={1} type="number" name="bedrooms" id="bedrooms" />
+                                <input onChange={handleChange} className='p-3 border border-gray-300 rounded-lg w-16' value={formData.bedrooms} min={1} type="number" name="bedrooms" id="bedrooms" />
                                 <span>Beds</span>
                             </div>
 
                             <div className='flex items-center gap-2'>
-                                <input onChange={handleChange} className='p-3 border border-gray-300 rounded-lg w-16' defaultValue={1} type="number" min={1} required name="bathrooms" id="bathrooms" />
+                                <input onChange={handleChange} className='p-3 border border-gray-300 rounded-lg w-16' value={formData.bathrooms} type="number" min={1} required name="bathrooms" id="bathrooms" />
                                 <span>Baths</span>
                             </div>
                         </div>
@@ -362,32 +382,32 @@ function CreateListing() {
 
                 <div className=' flex flex-wrap gap-4 place-content-center text-sm sm:text:md' >
                     <div className='flex flex-wrap gap-3 items-center'>
-                        <input onChange={handleChange} type="checkbox" name="discount" id="discount" />
+                        <input onChange={handleChange} checked={formData.discount} type="checkbox" name="discount" id="discount" />
                         <span>Discount</span>
                     </div>
                     <div className='flex flex-wrap gap-2 items-center'>
-                        <input onChange={handleChange} className='border border-slate-400 rounded-lg w-20 p-2' type="number" name="regularPrice" id="regularPrice" defaultValue={30} />
+                        <input onChange={handleChange} className='border border-slate-400 rounded-lg w-20 p-2' type="number" name="regularPrice" id="regularPrice" value={formData.regularPrice} />
                         <span>Regular Price ({formData.type === 'sell' ? '$' : '$/month'})</span>
                     </div>
                     {
                         formData.discount &&
                         <div className='flex flex-wrap gap-2 items-center'>
-                            <input onChange={handleChange} className='border rounded-lg w-20 p-2' type="number" name="discountedPrice" id="discountedPrice" defaultValue={30} />
+                            <input onChange={handleChange} className='border rounded-lg w-20 p-2' type="number" name="discountedPrice" id="discountedPrice" value={formData.discountedPrice} />
                             <span>Discounted Price ({formData.type === 'sell' ? '$' : '$/month'})</span>
                         </div>
                     }
 
                     <button 
                         disabled={loadingimage}
-                        className='bg-green-500 p-3 border rounded-lg text-white hover:bg-opacity-90 w-80 lg:w-36'>
-                        {loading  ? 'Uploading Post' : 'Create Post'}
+                        className='bg-blue-500 p-3 border rounded-lg text-white hover:bg-opacity-90 w-80 lg:w-36'>
+                        {loading  ? 'Uploading Post' : 'Edit Post'}
                     </button>
                 </div>
 
 
             </form>
         </main>
-    )
+  )
 }
 
-export default CreateListing
+export default UpdateListing;

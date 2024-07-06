@@ -18,19 +18,22 @@ function Header() {
                 <input className='bg-transparent focus:outline-none w-24 sm:w-64' type="text" placeholder='search city' />
                 <FaSearch className="text-slate-700 hover:cursor-pointer"/>
             </form>
-            <ul className="flex gap-4 ">
+            <ul className="flex gap-4 ">  
               <Link to='/'>
-              <li className="hidden sm:inline text-slate-700 hover:underline">Home</li>
+              <li className="hidden sm:inline font-semibold text-blue-800 hover:underline">Home</li>
               </Link>
               <Link to='/about'>
-              <li className="hidden sm:inline text-slate-700 hover:underline">About</li>
+              <li className="hidden sm:inline font-semibold text-blue-800 hover:underline">About</li>
+              </Link>
+              <Link to={'/createListing'}>
+                <li className="hidden sm:inline font-semibold text-blue-800 hover:underline">Add Property</li>
               </Link>
               {user.currentUser ?
               <Link to='/profile'>
               <img className="w-7 h-7 rounded-full object-cover" src={user.currentUser.avatar} alt="image" />
               </Link> 
               :<Link to='/sign-in'>
-              <li className="text-slate-700 hover:underline">SignIn</li>
+              <li className="text-blue-800 font-semibold hover:underline">SignIn</li>
               </Link>
               }
             </ul>
