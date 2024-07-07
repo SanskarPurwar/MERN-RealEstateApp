@@ -9,16 +9,16 @@ function Header() {
     <header className='bg-blue-200 shadow-md'>
         <div className='flex justify-between items-center max-w-6xl mx-auto p-3' >
             <Link to='/'>
-            <h1 className='font-bold text-sm sm:text-xl flex flex-wrap'>
+            <h1 className='font-bold text-xs sm:text-sm md:text-xl flex flex-wrap'>
                 <span className='text-slate-500'>HEAVEN</span >
                 <span className='text-slate-700'>NEST</span>
             </h1>
             </Link>
-            <form className='bg-blue-100 p-2 rounded-lg flex items-center'>
-                <input className='bg-transparent focus:outline-none w-24 sm:w-64' type="text" placeholder='search city' />
+            <form className='bg-blue-100 p-1 sm:p-2 rounded-lg flex items-center'>
+                <input className='bg-transparent focus:outline-none w-24 sm:w-48 md:w-60 lg:w-80' type="text" placeholder='search city' />
                 <FaSearch className="text-slate-700 hover:cursor-pointer"/>
             </form>
-            <ul className="flex gap-4 ">  
+            <ul className="flex gap-3 md:gap-4 text-md">  
               <Link to='/'>
               <li className="hidden sm:inline font-semibold text-blue-800 hover:underline">Home</li>
               </Link>

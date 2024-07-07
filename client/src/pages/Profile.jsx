@@ -251,8 +251,10 @@ function Profile() {
 
         {listingData && openListing &&
           listingData.map((item, index) => (
-            <div key={item._id} className='cursor-pointer flex sm:max-w-3xl bg-sky-50 overflow-auto text-xs sm:text-sm sm:gap-5 gap-2 rounded-lg border-sky-200 border-2'>
-              <img className='w-32 sm:w-40 md:w-56 border rounded-md' src={item?.imageUrls[0]} alt="" />
+            <div key={item._id} className='cursor-pointer flex sm:max-w-3xl bg-sky-50 overflow-auto text-xs sm:text-sm gap-2 sm:gap-5 rounded-lg border-sky-200 border-2'>
+              <Link to={`/listing/${item._id}`}>
+              <img className='w-32 h-full sm:w-40 md:w-56 border rounded-md' src={item?.imageUrls[0]} alt="" />
+              </Link>
               <div className='flex flex-col flex-wrap my-2 sm:my-6 gap-3 justify-evenly mx-2 sm:mx-6'>
 
                 <h3 className='font-semibold'>{`${item.title}`}</h3>

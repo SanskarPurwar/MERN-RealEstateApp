@@ -138,7 +138,7 @@ function UpdateListing() {
         setIsModalOpen(true);
       };
     
-      const closeModal = () => {
+    const closeModal = () => {
         setIsModalOpen(false);
       };
 
@@ -248,6 +248,14 @@ function UpdateListing() {
                 })
             }
     } 
+
+    const handleDelete = (urlToDelete)=>{
+        setFormData((formData)=>({
+            ...formData,
+            imageUrls:formData.imageUrls.filter( url=> url!=urlToDelete )
+        }))
+    }
+
 
   return (
     <main className='max-w-7xl mx-auto my-6' >
