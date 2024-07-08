@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAsyncError, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
@@ -7,7 +7,7 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
 import {  FaLocationPin, FaShare } from 'react-icons/fa6';
 import {  GiSofa } from 'react-icons/gi';
-import { BiHeart, BiShare, BiShareAlt, BiSolidBath, BiSolidBed, BiSolidHeart, BiSolidLike } from 'react-icons/bi';
+import { BiHeart,  BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
 
 function Listing() {
 
@@ -45,6 +45,7 @@ function Listing() {
                 setLoading(true);
                 const response = await fetch(`/api/listing/getListing/${listingId}`);
                 const data = await response.json();
+                console.log(data);
                 if (data.success === false) {
                     console.log(data.message);
                     return;
@@ -94,7 +95,7 @@ function Listing() {
                             <div className='flex flex-wrap gap-16 sm:gap-28'>
                                 <div className='flex flex-col gap-3'>
                                 <div className='flex items-center gap-14'>
-                                    <p className='text-3xl font-semibold'>{formData.title}</p>
+                                    <p className='text-xl font-semibold'>{formData.title}</p>
                                     <div className='flex gap-3 items-center text-xl  hover:cursor-pointer'>
                                         <FaShare className='text-blue-500' onClick={handleShare}  />
                                         
@@ -144,7 +145,7 @@ function Listing() {
                                 <h1 className='text-center font-semibold text-blue-950 text-2xl'>Amneties</h1>
                                 <div className='grid grid-cols-3 gap-6 mt-4 content-center'>
                                     {formData.selectedPerks.map((item, index) => (
-                                        <div className='bg-sky-50 py-2 px-4 border rounded-lg text-center text-purple-600'>
+                                        <div className='bg-white py-2 px-4 border rounded-lg text-center text-purple-600'>
                                             <p>{item}</p>
                                         </div>
                                     ))}

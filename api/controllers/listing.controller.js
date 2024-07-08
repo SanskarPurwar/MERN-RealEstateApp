@@ -64,11 +64,51 @@ export const getListing = async (req,res,next)=>{
         if(!listing){
             return next(errorHandler(404, 'Listing Not Found'));
         }
-        if(req.user.id !== listing.userRef){
-            return next(errorHandler(401, "Unauthorised Request hai"));
-        }
         res.status(200).json(listing);
     } catch (error) {
         next(error);
+    }
+}
+
+export const filterListings = async (req,res,next)=>{
+    try {
+        const limit = parseInt(req.query.limit) || 12;
+        const startIndex = parseInt(req.query.startIndex) || 0;
+        let discount = req.query.offer;
+        
+        if(discount === undefined || offer === 'false'){
+            discount = {$in: [true, false]};
+        }
+        let furnished = req.query.furnished;
+        if(furnished === undefined || furnished === 'false'){
+            furnished = {$in : [false , true]};
+        }
+        let type = req.query.type;
+        if(type === 'all' || type === undefined){
+            type = {$in:['sell' , 'rent']};
+        }   
+        const minPrice = parseInt(req.query.minPrice) || 0;
+        const maxPrice = parseInt(req.query.maxPrice) || Infinity;
+
+        const search = req.query.searchData || '';
+        const sort = req.query.sort || 'createdAt'; 
+        const order = req.query.order || 'desc';
+
+
+        // reviews to be added
+        // const reviews  
+        const filterLists = await Listing.find({
+            title: {$regex : search , $options: 'i'},
+            furnished,
+            type,
+            regularPrice : { $gte:minPrice , $lte:maxPrice},
+            discount
+        }).sort({[sort] : order})
+          .limit([limit])
+          .skip([startIndex]);
+        
+        res.status(200).json(filterLists);
+    } catch (error) {
+        next(`error is,${error.message}`);
     }
 }
