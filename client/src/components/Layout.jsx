@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
     '/profile', 
     '/createListing', 
     '/updateListing/:listingId', 
-    '/listing/:listingId'
+    '/listing/:listingId',
   ];
 
   const showHeader = headerRoutes.some(route => 

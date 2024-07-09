@@ -11,6 +11,7 @@ import UpdateListing from './pages/UpdateListing';
 import Listing from './pages/Listing';
 import Properties from './pages/Properties';
 import Layout from './components/Layout';
+import MyListing from './pages/MyListing';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/profile" element={<Profile/>} />
           <Route path="/createListing" element={<CreateListing/>} />
           <Route path="/updateListing/:listingId" element={<UpdateListing/>} />
+          <Route path='/myListing/:userId' element={<MyListing/>}/>
         </Route>
         <Route path="/listing/:listingId" element={<Listing/>}/>
         <Route path='/properties' element={<Properties/>}/>
