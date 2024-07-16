@@ -79,6 +79,9 @@ function Header2() {
                   <Link to={'/myWishlist'}>
                   <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">Wishlist</li>
                   </Link>
+                  <Link to={'/myChats'}>
+                  <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">Chats</li>
+                  </Link>
                   <Link to={'/sign-in'} >
                   <li onClick={handleSignOut} className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">logOut</li> 
                   </Link>

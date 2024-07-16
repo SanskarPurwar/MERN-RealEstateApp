@@ -23,11 +23,51 @@ connectDB()
         console.log(err);
     })
 
+
+import http from 'http';
+import { Server } from 'socket.io';
+
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server , {
+    cors:{
+        origin :"*",
+    },
+});
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+  
+    socket.on('joinChat', (chatId) => {
+      socket.join(chatId);
+      console.log(`User joined chat: ${chatId}`);
+    });
+  
+    socket.on('sendMessage', async (message) => {
+      try {
+        const newMessage = await Message.create(message);
+        await Chat.findByIdAndUpdate(message.chatId, {
+          $push: { messages: newMessage._id },
+          $set: { lastMessage: message.message },
+        });
+  
+        io.to(message.chatId).emit('receiveMessage', newMessage);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('User disconnected');
+    });
+  });
+  
+
 app.use(express.json());
 app.use(cookieParser());
 
-app.listen(3000 , ()=>{
+
+server.listen(3000 , ()=>{
     console.log(`Server is listening at http://localhost:3000`);
 });
 
@@ -35,6 +75,8 @@ import userRouter from './routes/user.route.js'
 import authRouter from './routes/auth.route.js'
 import listingRouter from './routes/listing.route.js'
 import chatRouter from './routes/chat.route.js'
+import Message from './models/message.model.js';
+import Chat from './models/chat.model.js';
 
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);

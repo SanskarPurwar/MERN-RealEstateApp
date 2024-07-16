@@ -5,9 +5,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
-import { FaArrowLeft, FaBackward, FaLeftLong, FaLocationPin, FaShare } from 'react-icons/fa6';
+import { FaArrowLeft, FaLocationPin, FaShare } from 'react-icons/fa6';
 import { GiSofa } from 'react-icons/gi';
-import { BiHeart, BiLeftArrow, BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
+import { BiHeart,  BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserSuccess } from '../redux/user/userSlice';
 import ChatBox from '../components/ChatBox';
@@ -17,8 +17,6 @@ function Listing() {
 
     const [loading, setLoading] = useState(false);
     const { currentUser } = useSelector(state => state.user);
-    const [allChats, setAllChats] = useState([]);
-
     const dispatch = useDispatch();
 
     SwiperCore.use([Navigation]);
@@ -33,6 +31,7 @@ function Listing() {
     const receiver = users?.filter((item) => item._id !== currentUser._id);
 
     const [formData, setFormData] = useState({
+        userRef: '',
         title: '',
         description: '',
         streetAddress: '',
@@ -62,6 +61,7 @@ function Listing() {
                     console.log(data.message);
                     return;
                 }
+                console.log(data);
                 setFormData(data);
                 setLoading(false);
                 return;
@@ -115,8 +115,8 @@ function Listing() {
             return;
         }
         try {
-            const response = await fetch('/api/chats/getChatArray', {
-                method: 'get',
+            const response = await fetch(`/api/chats/createChat/${currentUser._id}/${formData.userRef}`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -246,27 +246,8 @@ function Listing() {
 
                     </div>
 
-
                     {
-                        showChats && allChats &&
-                        (
-                            <div className='fixed left-1/4 bottom-5 bg-green-100 z-50 h-5/6 w-1/2 overflow-x-auto' >
-                                <div className='flex items-center w-full bg-blue-200 p-1'>
-                                    <FaArrowLeft className='text-xl text-blue-500 cursor-pointer' onClick={()=>setShowChats(false)}/>
-                                    <span className='w-full text-center font-semibold text-2xl text-blue-500'>Chat </span>
-                                </div>
-                                {allChats.map((item, index) => (
-                                    <div key={item._id} onClick={() => handleChatConversation(item._id)}>
-                                        <ChatBox chat={item} />
-                                    </div>
-                                ))
-                                }
-                            </div>
-                        )
-                    }
-
-                    {
-                        openChat && chatConversation &&
+                        showChats && chatConversation &&
                         <div className='fixed left-1/4 top-20 bg-slate-100 z-50 h-5/6 w-1/2 overflow-x-auto' >
                             <div className='flex items-center justify-between bg-blue-200'>
                                 <FaArrowLeft onClick={()=>setOpenChat(openChat=>!openChat)} className='text-xl text-blue-500 cursor-pointer'/>

@@ -6,6 +6,12 @@ import { errorHandler } from "../utils/errors.js";
 export const createChat = async (req, res, next)=>{
     const userId1 = req.params.userId1;
     const userId2 = req.params.userId2;
+
+    const isPresent = await Chat.find({userIds: { $all : [userId1 , userId2]}});
+    if(isPresent){
+        is
+    }
+
     try {
         const chat = await Chat.create({
             userIds:[userId1 , userId2],
@@ -17,7 +23,6 @@ export const createChat = async (req, res, next)=>{
         await User.findByIdAndUpdate(userId1, {$push : {chatId:chat._id} });
         await User.findByIdAndUpdate(userId2, {$push : {chatId:chat._id} });
 
-        console.log('hi')
         res.status(200).json(chat);
     } catch (error) {
         res.status(500 , `Error creating chat ${error}`)

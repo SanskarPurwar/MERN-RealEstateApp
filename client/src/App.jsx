@@ -14,6 +14,8 @@ import Layout from './components/Layout';
 import MyListing from './pages/MyListing';
 import MyWishlist from './pages/MyWishlist';
 import Footer from './components/Footer';
+import ChatBox from './components/ChatBox';
+import MyChat from './pages/MyChat';
 
 
 function App() {
@@ -30,6 +32,7 @@ function App() {
         <Route element={<PrivateRoute/>}>
           <Route path="/profile" element={<Profile/>} />
           <Route path="/myWishlist" element={<MyWishlist/>} />
+          <Route path="/myChats" element={<MyChat/>} />
           <Route path="/createListing" element={<CreateListing/>} />
           <Route path="/updateListing/:listingId" element={<UpdateListing/>} />
           <Route path='/myListing/:userId' element={<MyListing/>}/>
