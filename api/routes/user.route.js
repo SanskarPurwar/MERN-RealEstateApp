@@ -1,5 +1,5 @@
 import express from 'express'
-import { deleteUser, updateUser, showListing } from '../controllers/user.controller.js';
+import { deleteUser, updateUser, showListing, updateWishlist} from '../controllers/user.controller.js';
 import { verifyToken } from '../utils/verifyuser.js';
 
 
@@ -13,6 +13,7 @@ router.get('/test',(req,res)=>{
 
 router.post('/update/:id' ,verifyToken, updateUser);
 router.delete('/delete/:id' ,verifyToken, deleteUser);
-router.get('/listing/:id' , verifyToken, showListing)
+router.get('/listing/:userId' , verifyToken, showListing);
+router.patch('/updateWishlist/:listingId/:userId' , verifyToken , updateWishlist);
 
 export default router;

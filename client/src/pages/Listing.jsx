@@ -5,19 +5,32 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
-import {  FaLocationPin, FaShare } from 'react-icons/fa6';
-import {  GiSofa } from 'react-icons/gi';
-import { BiHeart,  BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
+import { FaArrowLeft, FaBackward, FaLeftLong, FaLocationPin, FaShare } from 'react-icons/fa6';
+import { GiSofa } from 'react-icons/gi';
+import { BiHeart, BiLeftArrow, BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateUserSuccess } from '../redux/user/userSlice';
+import ChatBox from '../components/ChatBox';
+import Chat from '../components/Chat';
 
 function Listing() {
 
     const [loading, setLoading] = useState(false);
+    const { currentUser } = useSelector(state => state.user);
+    const [allChats, setAllChats] = useState([]);
+
+    const dispatch = useDispatch();
 
     SwiperCore.use([Navigation]);
     const params = useParams();
     const listingId = params.listingId;
-    const [like, setLike ]= useState(false); 
-    const [copied , setCopied] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [needLogIn, setNeedLogin] = useState(false);
+    const [showChats, setShowChats] = useState(false);
+    const [openChat, setOpenChat] = useState(false);
+    const [chatConversation, setChatConversation] = useState(null);
+    const users = chatConversation?.userIds;
+    const receiver = users?.filter((item) => item._id !== currentUser._id);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -45,7 +58,6 @@ function Listing() {
                 setLoading(true);
                 const response = await fetch(`/api/listing/getListing/${listingId}`);
                 const data = await response.json();
-                console.log(data);
                 if (data.success === false) {
                     console.log(data.message);
                     return;
@@ -60,51 +72,122 @@ function Listing() {
         getPost();
     }, [])
 
-    const handleShare = ()=>{
+    const handleShare = () => {
         navigator.clipboard.writeText(window.location.href);
         setCopied(true);
-        setTimeout(()=>{
+        setTimeout(() => {
             setCopied(false);
-        } , 1000)
+        }, 1000)
     }
 
-    const handleLike = ()=>{
-        console.log('clisked');
-        setLike((like)=>(like = !like)
-    )}
-    console.log(formData)
-    console.log(like);
+    const handleWishlist = async () => {
+        setNeedLogin(false);
+        if (!currentUser) {
+            setTimeout(() => {
+                setNeedLogin(false);
+            }, 1000);
+            setNeedLogin(true);
+            return;
+        }
+        try {
+            const response = await fetch(`/api/user/updateWishlist/${formData._id}/${currentUser._id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = await response.json();
+            if (data.success === false) {
+                console.log(data.message);
+                return;
+            }
+            dispatch(updateUserSuccess(data));
+            console.log(data);
+        } catch (error) {
+            console.log(error.message);
+        }
+
+    }
+
+    const handleShowChats = async () => {
+        if (showChats === true) {
+            setShowChats(false);
+            return;
+        }
+        try {
+            const response = await fetch('/api/chats/getChatArray', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = await response.json();
+            if (data.success === false) {
+                console.log('error ', data.message);
+                return;
+            }
+            setAllChats(data);
+            setShowChats(true);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleChatConversation = async (chatId) => {
+        setOpenChat(false);
+        try {
+            const response = await fetch(`/api/chats/showConversation/${chatId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            const data = await response.json();
+            if (data.success === false) {
+                console.log(data.message);
+                return;
+            }
+            setOpenChat(true);
+            setChatConversation(data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+
     return (
         <main className='m-4'>
             {!loading && formData && (
                 <>
-                    <div className='border rounded-lg'>
+                    <div className={`border rounded-lg ${showChats ? 'blur-sm' : ''}`}>
                         <Swiper navigation>
                             {
                                 formData.imageUrls.map((url, index) => (
                                     <SwiperSlide key={url}>
                                         <div className='border rounded-lg relative h-[300px] sm:h-[450px] md:h-[600px] lg:h-[650px] w-full'>
-                                            <img src={url} className='rounded-lg absolute top-0 left-0 w-full h-full' alt="" />
+                                            <img src={url} className='rounded-lg absolute top-0 left-0 w-full h-full object-cover' alt="" />
                                         </div>
                                     </SwiperSlide>
                                 ))}
                         </Swiper>
                     </div>
-                    <div className='flex flex-wrap m-5 gap-20 justify-center'>
+                    <div className={`flex flex-wrap my-5 gap-20 justify-center ${showChats ? 'blur-sm' : ''}`}>
                         <div className='flex flex-col max-w-2xl gap-4'>
                             <div className='flex flex-wrap gap-16 sm:gap-28'>
                                 <div className='flex flex-col gap-3'>
-                                <div className='flex items-center gap-14'>
-                                    <p className='text-xl font-semibold'>{formData.title}</p>
-                                    <div className='flex gap-3 items-center text-xl  hover:cursor-pointer'>
-                                        <FaShare className='text-blue-500' onClick={handleShare}  />
-                                        
-                                        <div className='text-red-500' onClick={handleLike}>
-                                            {like ? <BiSolidHeart/>: <BiHeart/>}
-                                        </div>    
+                                    <div className='flex items-center gap-14'>
+                                        <p className='text-xl font-semibold'>{formData.title}</p>
+                                        <div className='flex gap-3 items-center text-xl  hover:cursor-pointer'>
+                                            <FaShare className='text-blue-500' onClick={handleShare} />
+
+                                            <div className='text-red-500' onClick={handleWishlist}>
+                                                {currentUser?.wishlist.includes(formData._id) ? <BiSolidHeart /> : <BiHeart />}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                {copied && <p className='fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-md opacity-80 transition-opacity duration-500 ease-in-out'>Link Copied</p> }
+                                    {copied && <p className='fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-md opacity-80 transition-opacity duration-500 ease-in-out'>Link Copied</p>}
                                     <div className='flex gap-3 items-center'>
                                         <FaLocationPin className='text-blue-600' />
                                         <p>{`${formData.streetAddress}, ${formData.city}, ${formData.state}, ${formData.country}`}</p>
@@ -123,9 +206,9 @@ function Listing() {
                                             <p className='pb-1'>{formData.bathrooms} baths</p>
                                         </div>
                                     </div>
-                                </div>                                
-                                <div className='border border-slate-600 py-2 px-4 rounded-xl bg-blue-500 text-gray-100'>
-                                    <span className='text-4xl font-semibold'>{`$${formData.regularPrice} `}</span> <span>{formData.type === 'rent' ? '/month' : ''}</span>
+                                </div>
+                                <div className='border border-slate-600 py-2 px-3 rounded-xl bg-blue-500 text-gray-100'>
+                                    <span className='text-3xl font-semibold'>{`$${formData.regularPrice} `}</span> <span>{formData.type === 'rent' ? '/month' : ''}</span>
                                     {
                                         formData.discount &&
                                         <p>{`offer $${formData.regularPrice - formData.discountedPrice} off`}</p>
@@ -145,7 +228,7 @@ function Listing() {
                                 <h1 className='text-center font-semibold text-blue-950 text-2xl'>Amneties</h1>
                                 <div className='grid grid-cols-3 gap-6 mt-4 content-center'>
                                     {formData.selectedPerks.map((item, index) => (
-                                        <div className='bg-white py-2 px-4 border rounded-lg text-center text-purple-600'>
+                                        <div key={item} className='bg-white py-2 px-4 border rounded-lg text-center text-purple-600'>
                                             <p>{item}</p>
                                         </div>
                                     ))}
@@ -153,16 +236,50 @@ function Listing() {
                             </div>
 
                         </div>
-                        <div className='flex flex-col gap-5 border rounded-md border-red-600 p-6 my-6 text-center sticky top-12 h-fit'>
-                            <h1 className='font-semibold mb-4'>Contact Owner</h1>
-                            <button className='bg-green-500 hover:bg-green-400 p-2 border rounded-md text-white font-semibold w-80 '>Schedule tour</button>
-                            <button className='bg-blue-500 hover:bg-blue-400 p-2 border rounded-md text-white font-semibold w-80'>Chat with Owner</button>
+                        <div className='flex flex-col gap-5 border rounded-md bg-blue-400 text-white  p-6 my-6 text-center sticky top-12 h-fit'>
+                            <h1 className='font-bold text-xl mb-4'>Contact Owner</h1>
+                            <button className='bg-green-500 hover:bg-green-600 p-2 border rounded-md text-white font-semibold w-80 '>Schedule tour</button>
+                            <button onClick={handleShowChats} className='bg-red-400 hover:bg-red-500 p-2 border rounded-md text-white font-semibold w-80'>Chat with Owner</button>
 
                             <p className='font-thin'>9 a.m - 6 p.m (Weekdays)</p>
                         </div>
 
                     </div>
+
+
+                    {
+                        showChats && allChats &&
+                        (
+                            <div className='fixed left-1/4 bottom-5 bg-green-100 z-50 h-5/6 w-1/2 overflow-x-auto' >
+                                <div className='flex items-center w-full bg-blue-200 p-1'>
+                                    <FaArrowLeft className='text-xl text-blue-500 cursor-pointer' onClick={()=>setShowChats(false)}/>
+                                    <span className='w-full text-center font-semibold text-2xl text-blue-500'>Chat </span>
+                                </div>
+                                {allChats.map((item, index) => (
+                                    <div key={item._id} onClick={() => handleChatConversation(item._id)}>
+                                        <ChatBox chat={item} />
+                                    </div>
+                                ))
+                                }
+                            </div>
+                        )
+                    }
+
+                    {
+                        openChat && chatConversation &&
+                        <div className='fixed left-1/4 top-20 bg-slate-100 z-50 h-5/6 w-1/2 overflow-x-auto' >
+                            <div className='flex items-center justify-between bg-blue-200'>
+                                <FaArrowLeft onClick={()=>setOpenChat(openChat=>!openChat)} className='text-xl text-blue-500 cursor-pointer'/>
+                                <p className='w-full text-center text-2xl font-semibold text-blue-500'>{receiver[0].username}</p>
+                                <img className='rounded-full w-11 h-11' src={receiver[0].avatar} alt="" />
+                            </div>
+
+                            <Chat chatConversation={chatConversation}/>
+                        </div>
+                    }
+
                 </>
+
             )}
         </main>
     )

@@ -97,7 +97,7 @@ function CreateListing() {
                 .catch((error) => {
                     console.log(error);
                     setLoadingImage(false);
-                    setUploadImageError(`Error uploading Image please`)
+                    setUploadImageError(`Image should be less than 4 mb`)
                 });
         }
         else {
@@ -240,7 +240,7 @@ function CreateListing() {
                     <div className='flex flex-col gap-3 max-w-xl content-center'>
                         <h2 className='text-lime-600 font-semibold self-center' >Tell About Your Place</h2>
 
-                        <input onChange={handleChange} className='p-3 border rounded-lg' type="text" id='title' placeholder='Title' minLength={10} maxLength={50} required />
+                        <input onChange={handleChange} className='p-3 border rounded-lg' type="text" id='title' placeholder='Title' minLength={5} maxLength={20} required />
                         <textarea onChange={handleChange} className='p-3 border rounded-lg' type='text' placeholder='Description' id='description' required />
 
                         <h2 className='text-rose-700 font-semibold self-center' >What's your place located</h2>
@@ -288,7 +288,7 @@ function CreateListing() {
                             perks?.map((item , index)=>(
                                 <div key={item.name}
                                 className={`flex flex-col bg-sky-50 border border-sky-500 rounded-lg items-center w-28 m-1.5 cursor-pointer
-                                  ${formData.selectedPerks.includes(item.name) ? 'bg-sky-300': 'hover:bg-sky-100'}`}
+                                  ${formData.selectedPerks.includes(item.name) ? 'bg-sky-400': 'hover:bg-sky-100'}`}
                                     onClick={()=>handlePerks(item.name)}>
                                 {item.icon}
                                 <p className='text-sm mb-1'>{item.name}</p>

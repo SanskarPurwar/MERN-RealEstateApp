@@ -12,6 +12,7 @@ function MyListing() {
     const [error , setError] = useState(null);
 
     const {userId} = useParams();
+
     useEffect(() => {
 
         const myList = async () => {
@@ -21,16 +22,16 @@ function MyListing() {
                 return
             }
             try {
-                    const response = await fetch(`/api/user/listing/${currentUser._id}`, {
+                    const response = await fetch(`/api/user/listing/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 })
                 const data = await response.json();
-                console.log(data);
                 if (data.success === false) {
-                      setError(data.message);
+                    setError(data.message);
+                    console.log('Hi')
                     return;
                 }
                 setListingData(data)
@@ -39,7 +40,6 @@ function MyListing() {
 
                 console.log(err)
             }
-
         }
         myList();
 
@@ -70,7 +70,7 @@ function MyListing() {
     }
 
     return (
-        <div className='flex flex-col flex-wrap gap-6 place-content-center mt-20 m-4'>
+        <div className='flex flex-col flex-wrap gap-6 place-content-center m-4'>
             {errorDeletingListing &&
                 <p className='text-red-700 text-center bg-red-100 py-2 max-w-5xl mx-auto border border-red-600 rounded-xl'>{errorDeletingListing}</p>}
             {

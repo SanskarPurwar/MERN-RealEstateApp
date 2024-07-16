@@ -1,12 +1,12 @@
 import { FaSearch } from "react-icons/fa"
-import { Link } from "react-router-dom"
-import {useSelector} from 'react-redux';
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signOutUserFailure, signOutUserStart, signOutUserSuccess } from "../redux/user/userSlice";
 
 function Header() {
   const user = useSelector(state=>state.user)
+  const navigate = useNavigate();
   const [openProfile, setOpenProfile] = useState(false);
   const dispatch = useDispatch();
 
@@ -24,13 +24,19 @@ function Header() {
         return;
       }
       dispatch(signOutUserSuccess());
+      setOpenProfile(false);
+      navigate('/sign-in')
     } catch (error) {
       dispatch(signOutUserFailure(error.message));
     }
   };
 
+  const location = useLocation();
+  const fixedRoute = ['/myWishlist','/myListing/:userId'];
+
+  const isFixed = fixedRoute.includes(location.pathname);
   return (
-    <header className=' relative bg-blue-200 shadow-md'>
+    <header className={`${isFixed ? 'fixed top-0 left-0 w-full' : ''} ${location.pathname === '/' ? 'bg-gray-200' :'bg-blue-200 '} w-full shadow-md z-50`}>
         <div className='flex justify-between items-center max-w-6xl mx-auto p-5' >
             <Link to='/'>
             <h1 className='font-bold xxs:text-xs xs:text-sm sm:text-lg md:text-xl flex flex-wrap'>
@@ -38,22 +44,18 @@ function Header() {
                 <span className='text-slate-700'>NEST</span>
             </h1>
             </Link>
-            {/* <form className='bg-blue-100 p-1 sm:p-2 rounded-lg flex items-center'>
-                <input className='bg-transparent focus:outline-none w-24 sm:w-48 md:w-60 lg:w-80' type="text" placeholder='search city' />
-                <FaSearch className="text-slate-700 hover:cursor-pointer"/>
-            </form> */}
-            <ul className="flex gap-3 xxs:text-xs xs:text-sm sm:text-lg md:gap-6">  
+            <ul className={`flex gap-3 xxs:text-xs ${location.pathname === '/' ? 'text-blue-800': 'text-blue-800'} xs:text-sm sm:text-lg md:gap-6`}>  
               <Link to='/'>
-              <li className="hidden sm:inline font-semibold text-blue-800 hover:underline">Home</li>
+              <li className="hidden sm:inline font-semibold  hover:underline">Home</li>
               </Link>
               <Link to='/about'>
-              <li className="hidden xs:inline font-semibold text-blue-800 hover:underline">About</li>
+              <li className="hidden xs:inline font-semibold hover:underline">About</li>
               </Link>
               <Link to={'/createListing'}>
-                <li className="sm:inline font-semibold text-blue-800 hover:underline">Add Property</li>
+                <li className="sm:inline font-semibold hover:underline">Add Property</li>
               </Link> 
               <Link to={'/properties'}>
-              <li className="sm:inline font-semibold text-blue-800 hover:underline">Buy/Rent</li>              
+              <li className="sm:inline font-semibold hover:underline">Buy/Rent</li>              
               </Link>
             </ul>
 
@@ -66,20 +68,21 @@ function Header() {
               }
 
         </div>
-              {openProfile && 
-                <ul className="absolute top-16 right-20 flex flex-col gap-2 transform ease-in-out duration-1000 bg-blue-200 text-blue-800 p-2 font-semibold border border-none rounded-lg z-30 outline-none">
+        {openProfile && 
+                <ul className="absolute xxs:right-0 top-12 sm:right-0 flex flex-col gap-2 transform ease-in-out duration-1000 bg-blue-200 text-blue-800 p-2 font-semibold border border-none rounded-lg z-30 outline-none">
                   <Link to={'/profile'}>
-                  <li className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">My Profile</li>
+                  <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">My Profile</li>
                   </Link>
                   <Link to={`/myListing/${user.currentUser._id}`} >
-                    <li className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">My Listings</li>
+                    <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">My Listings</li>
                   </Link>
-                  <Link>
-                  <li className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">Wishlist</li>
+                  <Link to={'/myWishlist'}>
+                  <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">Wishlist</li>
                   </Link>
-                  <Link to={'/sign-in'}>
-                  <li onClick={handleSignOut} className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">logOut</li> 
+                  <Link to={'/sign-in'} >
+                  <li onClick={handleSignOut} className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">logOut</li> 
                   </Link>
+
               </ul>
               }
     </header>

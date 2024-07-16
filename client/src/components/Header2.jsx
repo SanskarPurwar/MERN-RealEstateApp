@@ -1,5 +1,5 @@
 import { FaSearch } from "react-icons/fa"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import {useSelector} from 'react-redux';
 import { useState } from "react";
 import { signOutUserFailure, signOutUserStart, signOutUserSuccess } from "../redux/user/userSlice";
@@ -31,17 +31,19 @@ function Header2() {
       dispatch(signOutUserSuccess());
     } catch (error) {
       dispatch(signOutUserFailure(error.message));
+      navigate(`/sign-in`);
     }
   };
 
-  const handleSearchSubmit = ()=>{
+  const handleSearchSubmit = (e)=>{
+    e.preventDefault();
     const url = new URLSearchParams(location.search);
-    url.set('searchData' , searchValue);
-    console.log(url)
+    url.set('searchData' , searchValue)
     const url_updated = url.toString();
     navigate(`/properties?${url_updated}`);
   }
 
+  
   return (
     <header className='fixed top-0 left-0 w-full bg-blue-200 shadow-md z-10'>
         <div className='flex justify-between items-center max-w-6xl mx-auto p-3' >
@@ -51,10 +53,12 @@ function Header2() {
                 <span className='text-slate-700'>NEST</span>
             </h1>
             </Link>
-            <form className='bg-blue-100 p-1 sm:p-2 rounded-lg flex items-center'>
-                <input className='bg-transparent focus:outline-none w-24 sm:w-48 md:w-60 lg:w-80' type="text" placeholder='search city' 
+            <form onSubmit={handleSearchSubmit} className='bg-blue-100 p-1 sm:p-2 rounded-lg flex items-center'>
+                <input value={searchValue} className='bg-transparent focus:outline-none w-24 sm:w-48 md:w-60 lg:w-80' type="text" placeholder='search city' 
                 onChange={handleSearchChange}/>
-                <FaSearch onClick={handleSearchSubmit} className="text-slate-700 hover:cursor-pointer"/>
+                <button type="submit" className="text-slate-700 hover:cursor-pointer">
+                <FaSearch/>
+                </button>
             </form>
 
             {user.currentUser ?
@@ -65,18 +69,18 @@ function Header2() {
               }
         </div>
         {openProfile && 
-                <ul className="absolute top-14 right-20 flex flex-col gap-2 transform ease-in-out duration-1000 bg-blue-200 text-blue-800 p-2 font-semibold border border-none rounded-lg z-30 outline-none">
+                <ul className="absolute xxs:right-0 top-12 sm:right-0 flex flex-col gap-2 transform ease-in-out duration-1000 bg-blue-200 text-blue-800 p-2 font-semibold border border-none rounded-lg z-30 outline-none">
                   <Link to={'/profile'}>
-                  <li className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">My Profile</li>
+                  <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">My Profile</li>
                   </Link>
                   <Link to={`/myListing/${user.currentUser._id}`} >
-                    <li className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">My Listings</li>
+                    <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">My Listings</li>
                   </Link>
-                  <Link>
-                  <li className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">Wishlist</li>
+                  <Link to={'/myWishlist'}>
+                  <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">Wishlist</li>
                   </Link>
                   <Link to={'/sign-in'} >
-                  <li onClick={handleSignOut} className="cursor-pointer w-full hover:bg-blue-100 px-16 py-2 border border-none rounded-lg">logOut</li> 
+                  <li onClick={handleSignOut} className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">logOut</li> 
                   </Link>
 
               </ul>

@@ -12,12 +12,16 @@ import Listing from './pages/Listing';
 import Properties from './pages/Properties';
 import Layout from './components/Layout';
 import MyListing from './pages/MyListing';
+import MyWishlist from './pages/MyWishlist';
+import Footer from './components/Footer';
 
 
 function App() {
   return (
     <BrowserRouter>
+    <div className='flex flex-col justify-between min-h-lvh'>
       <Layout/>
+      <div className=''>
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/sign-in" element={<SignIn/>} />
@@ -25,6 +29,7 @@ function App() {
         <Route path="/about" element={<About/>} />
         <Route element={<PrivateRoute/>}>
           <Route path="/profile" element={<Profile/>} />
+          <Route path="/myWishlist" element={<MyWishlist/>} />
           <Route path="/createListing" element={<CreateListing/>} />
           <Route path="/updateListing/:listingId" element={<UpdateListing/>} />
           <Route path='/myListing/:userId' element={<MyListing/>}/>
@@ -32,6 +37,9 @@ function App() {
         <Route path="/listing/:listingId" element={<Listing/>}/>
         <Route path='/properties' element={<Properties/>}/>
       </Routes>
+      </div>
+      <Footer/>
+      </div>
     </BrowserRouter>
   )
 }

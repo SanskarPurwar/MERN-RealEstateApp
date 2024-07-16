@@ -3,18 +3,26 @@ import { GiSofa } from 'react-icons/gi';
 import { BiDownArrow, BiHeart, BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaLocationPin, FaShare } from 'react-icons/fa6';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUserSuccess } from '../redux/user/userSlice';
+import Card from '../components/Card';
 
 function Properties() {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector(state => state.user);
   const [filterListings, setFilterListings] = useState([]);
   const [copied, setCopied] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [needLogIn, setNeedLogin] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
   const [filterData, setFilterData] = useState({
     searchData: '',
-    discount: 'false',
-    furnished: 'false',
-    type: 'both',
+    discount: 'true',
+    furnished: 'true',
+    type: 'all',
     minPrice: 0,
     maxPrice: Infinity,
     sort: 'createdAt',
@@ -40,13 +48,13 @@ function Properties() {
         furnished: furnished === 'true' ? true : false,
         discount: discount === 'true' ? true : false,
         minPrice: minPrice || 0,
-        maxPrice : maxPrice || Infinity,
+        maxPrice: maxPrice || Infinity,
         sort: sort || 'created_At',
         order: order || 'desc',
       });
     }
 
-    const filterListings = async (req, res, next) => {
+    const filterListingsFunction = async () => {
 
       try {
         const url_updated = url.toString();
@@ -58,8 +66,14 @@ function Properties() {
         });
         const data = await response.json();
         if (data.success === false) {
-          console.log(data.message);
           return;
+        }
+        if (data.length >= 5) {
+          setShowMore(true);
+
+        } else {
+          setShowMore(false);
+
         }
         setFilterListings(data);
       } catch (error) {
@@ -68,8 +82,8 @@ function Properties() {
       }
     }
 
-    filterListings();
-  
+    filterListingsFunction();
+
   }, [location.search]);
 
   const handleShare = (id) => {
@@ -79,6 +93,34 @@ function Properties() {
     setTimeout(() => {
       setCopied(false);
     }, 1000)
+  }
+  const handleWishlist = async (listingId) => {
+    setNeedLogin(false);
+    if (!currentUser) {
+      setTimeout(() => {
+        setNeedLogin(false);
+      }, 1000);
+      setNeedLogin(true);
+      return;
+    }
+    try {
+      const response = await fetch(`/api/user/updateWishlist/${listingId}/${currentUser._id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      const data = await response.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      console.log(data);
+    } catch (error) {
+      console.log(error.message);
+    }
+
   }
 
   const handleChange = (e) => {
@@ -102,8 +144,8 @@ function Properties() {
         [e.target.id]: e.target.value
       }))
     }
-    if(e.target.name === 'sort'){
-      setFilterData(()=>({
+    if (e.target.name === 'sort') {
+      setFilterData(() => ({
         ...filterData,
         sort: e.target.id.split('_')[0] || 'createdAt',
         order: e.target.id.split('_')[1] || 'desc'
@@ -111,14 +153,14 @@ function Properties() {
     }
   }
 
-  const handleFilters = (e)=>{
+  const handleFilters = (e) => {
     e.preventDefault();
     setShowFilter(false);
     const url = new URLSearchParams();
     url.set('discount', filterData.discount);
-    url.set('furnished',filterData.furnished);
-    url.set('type' , filterData.type);
-    url.set('minPrice',filterData.minPrice);
+    url.set('furnished', filterData.furnished);
+    url.set('type', filterData.type);
+    url.set('minPrice', filterData.minPrice);
     url.set('maxPrice', filterData.maxPrice);
     url.set('sort', filterData.sort);
     url.set('order', filterData.order);
@@ -127,8 +169,25 @@ function Properties() {
     navigate(`/properties?${url_updated}`)
   }
 
+  const showMoreClicked = async () => {
+    setShowMore(false);
+    const startIndex = filterListings.length;
+    const url = new URLSearchParams(location.search);
+    url.set('startIndex', startIndex);
+    const updatedUrl = url.toString();
+    const response = await fetch(`/api/listing/filterLists/?${updatedUrl}`);
+    const data = await response.json();
+    if (data.success === false) {
+      return;
+    }
+    console.log(data);
+    if (data.length >= 5) setShowMore(true);
+    else { setShowMore(false) };
+    setFilterListings((filterListings) => [...filterListings, ...data]);
+  }
+
   return (
-    <div className='relative mt-24 mx-24 h-[1000px]'>
+    <div className='relative my-32 w-screen'>
       <header className={`fixed ${showFilter ? 'top-16 left-0' : 'xxs:top-20 xxs:left-1 xs:left-6 sm:top-24 sm:left-10 md:left-16 md:top-20'} flex gap-10 z-10 bg-white`}>
         <div className='flex flex-col'>
           <div onClick={() => setShowFilter(!showFilter)} className='flex gap-2 items-center border border-black py-1 px-3 cursor-pointer bg-inherit hover:bg-slate-100'>
@@ -139,10 +198,10 @@ function Properties() {
             <div className="p-4 border rounded">
               <div className="flex flex-col gap-2">
                 <label>
-                  <input onChange={handleChange} type="checkbox" id='discount' /> discount
+                  <input onChange={handleChange} checked={filterData.discount} type="checkbox" id='discount' /> discount
                 </label>
                 <label>
-                  <input onChange={handleChange} type="checkbox" id='furnished' /> furnished
+                  <input onChange={handleChange} checked={filterData.furnished} type="checkbox" id='furnished' /> furnished
                 </label>
                 <span className='font-semibold'>Type: </span>
                 <div onChange={handleChange} className='flex item-center gap-4'>
@@ -151,10 +210,10 @@ function Properties() {
                     <input type="radio" checked={filterData.type === 'all'} name='type' id='all' /> both
                   </label>
                   <label className='flex item-center gap-2'>
-                    <input checked={filterData.type === 'sell'}  type="radio" name='type' id='sell' /> sell
+                    <input checked={filterData.type === 'sell'} type="radio" name='type' id='sell' /> sell
                   </label>
                   <label className='flex item-center gap-2'>
-                    <input checked={filterData.type === 'rent'}  type="radio" name='type' id='rent' /> rent
+                    <input checked={filterData.type === 'rent'} type="radio" name='type' id='rent' /> rent
                   </label>
 
                 </div>
@@ -171,10 +230,10 @@ function Properties() {
                     <input checked={filterData.sort === 'regularPrice' && filterData.order === 'desc'} type="radio" name="sort" id='regularPrice_desc' /> Price: High to Low
                   </label>
                   <label>
-                    <input checked={filterData.sort === 'createdAt' && filterData.order === 'asc'} type="radio" name="sort" id='createdAt_asc' /> Newest
+                    <input checked={filterData.sort === 'createdAt' && filterData.order === 'asc'} type="radio" name="sort" id='createdAt_asc' /> Oldest
                   </label>
                   <label>
-                    <input checked={filterData.sort === 'createdAt' && filterData.order === 'desc'} type="radio" name="sort" id='createdAt_desc' /> Oldest
+                    <input checked={filterData.sort === 'createdAt' && filterData.order === 'desc'} type="radio" name="sort" id='createdAt_desc' /> Latest
                   </label>
                 </div>
 
@@ -187,54 +246,48 @@ function Properties() {
         </div>
       </header>
 
+      {
+        (filterListings.length === 0) &&
+        <p className='text-center text-2xl text-red-500'>No properties exist related to this search</p>
+      }
 
-
-
-      <div className=' flex flex-wrap gap-4 justify-center'>
-        {filterListings &&
-          filterListings.map((item, index) => (
-            <div key={item._id} className='flex flex-col border rounded-lg border-slate-300 bg-white gap-1 xs:w-64 relative hover:bg-slate-50 shadow-lg overflow-hidden'>
-              <Link to={`/listing/${item._id}`}>
-                <img className='w-full xxs:h-36 xs:h-60 border rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-700' src={item.imageUrls[0]} alt="" />
-              </Link>
+      {filterListings && (
+        <div className='flex flex-wrap gap-4 justify-center mb-10'>
+          {filterListings.map((item, index) => (
+            <div key={index} className='relative'>
+              <Card item={item} />
               <div className='absolute top-2 right-2 flex gap-2'>
-                <BiHeart className='text-red-500 cursor-pointer text-lg' />
-                <FaShare onClick={() => handleShare(item._id)} className='text-blue-500 cursor-pointer' />
-              </div>
-              <div className='flex flex-col gap-3 px-1'>
-
-                <div className='flex justify-between items-center'>
-                  <span className='truncate xxs:text-xs xs:text-sm font-semibold xxs:w-24 xs:w-40'>{item.title}</span>
-                  <span className='truncate xxs:text-sm xs:text-lg font-semibold xxs:mr-1 sm:mr-4 text-yellow-600'>${item.regularPrice}</span>
-                </div>
-                <ul className='flex flex-wrap gap-3 items-center '>
-                  <li className='flex gap-1 items-center '>
-                    <BiSolidBath className='text-blue-600' />
-                    <span className='text-xs xs:text-sm'>{`${item.bathrooms} baths`}</span>
-                  </li>
-                  <li className='flex gap-1 items-center'>
-                    <BiSolidBed className='text-blue-600' />
-                    <span className='text-xs xs:text-sm'>{`${item.bedrooms} baths`}</span>
-                  </li>
-                  <li className='flex gap-1 items-center'>
-                    <GiSofa className='text-blue-600' />
-                    <span className='text-xs xs:text-sm'>{item.furnished ? 'furnished' : 'Not furnished'}</span>
-                  </li>
-                </ul>
-                <div className='flex justify-between pb-1'>
-                <ul className='flex gap-0.5 items-center mb-1'>
-                  <FaLocationPin className='text-blue-600' />
-                  <li className='truncate text-xs xs:text-sm w-20 xs:w-40'>{`${item.city},${item.state}, ${item.country}`}</li>
-                </ul>
-                  <span className='text-xs xs:bg-red-500 text-red-500 xs:p-1 xs:text-white xs:border xs:rounded-lg text-center'>{`For ${item.type}`}</span>
-                  </div>
+                {currentUser?.wishlist.includes(item._id) ? (
+                  <BiSolidHeart
+                    onClick={() => handleWishlist(item._id)}
+                    className='text-red-500 cursor-pointer text-lg'
+                  />
+                ) : (
+                  <BiHeart
+                    onClick={() => handleWishlist(item._id)}
+                    className='text-red-500 cursor-pointer text-lg'
+                  />
+                )}
+                <FaShare
+                  onClick={() => handleShare(item._id)}
+                  className='text-blue-500 cursor-pointer'
+                />
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
+
+      {showMore &&
+        <p onClick={showMoreClicked} className='text-blue-500 text-center p-4 cursor-pointer hover:text-blue-400'> show more</p>
+      }
       {
         copied &&
         <span className='fixed left-1/2 bottom-6 transform transition-shadow ease-in-out duration-500 bg-gray-700 opacity-60 text-white transform -translate-x-1/2 p-3 border rounded-md'>Link Copied</span>
+      }
+      {
+        needLogIn &&
+        <span className='fixed left-1/2 bottom-6 transform transition-shadow ease-in-out duration-500 bg-gray-700 opacity-60 text-white transform -translate-x-1/2 p-3 border rounded-md'>Please Sign-up</span>
       }
     </div>
   )

@@ -17,8 +17,6 @@ function SignIn() {
       }
     } )
   }
-  console.log(formData)
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +44,7 @@ function SignIn() {
 
   return (
 
-    <div className='p-3 max-w-lg mx-auto'>
+    <div className='absolute top-20 left-1/2 transform -translate-x-1/2  sm:w-[384px] md:w-[512px] p-3'>
       <h1 className='text-center text-2xl font-semibold my-8'>Sign In</h1>
       <form className='flex flex-col gap-3'>
         <input onChange={handleChange} className='border rounded-lg p-2' type="text" placeholder='Username or Email' id='username' />

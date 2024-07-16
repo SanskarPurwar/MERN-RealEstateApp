@@ -5,7 +5,6 @@ import { errorHandler } from "../utils/errors.js";
 export const createListing = async (req , res , next)=>{
     try {
         const listing = await  Listing.create(req.body);
-        console.log("Here is listing ",listing);
         res.status(201).json(listing);
     } catch (error) {
         console.log('error is here',error);
@@ -72,11 +71,11 @@ export const getListing = async (req,res,next)=>{
 
 export const filterListings = async (req,res,next)=>{
     try {
-        const limit = parseInt(req.query.limit) || 12;
+        const limit = parseInt(req.query.limit) || 5;
         const startIndex = parseInt(req.query.startIndex) || 0;
-        let discount = req.query.offer;
+        let discount = req.query.discount;
         
-        if(discount === undefined || offer === 'false'){
+        if(discount === undefined || discount === 'false'){
             discount = {$in: [true, false]};
         }
         let furnished = req.query.furnished;
@@ -104,8 +103,8 @@ export const filterListings = async (req,res,next)=>{
             regularPrice : { $gte:minPrice , $lte:maxPrice},
             discount
         }).sort({[sort] : order})
-          .limit([limit])
-          .skip([startIndex]);
+          .limit(limit)
+          .skip(startIndex);
         
         res.status(200).json(filterLists);
     } catch (error) {

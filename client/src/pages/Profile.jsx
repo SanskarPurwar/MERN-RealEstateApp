@@ -185,7 +185,7 @@ function Profile() {
 
   return (
     <>
-      <div className='max-w-sm md:max-w-lg mx-auto p-3'>
+      <div className='absolute top-20 left-1/2 transform -translate-x-1/2  sm:w-[384px] md:w-[512px] p-3'>
         <h1 className='text-xl md:text-3xl text-center my-5 font-semibold'>Welcome {currentUser.username}</h1>
 
         {
