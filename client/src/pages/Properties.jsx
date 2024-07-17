@@ -68,7 +68,7 @@ function Properties() {
         if (data.success === false) {
           return;
         }
-        if (data.length >= 5) {
+        if (data.length >= 9) {
           setShowMore(true);
 
         } else {

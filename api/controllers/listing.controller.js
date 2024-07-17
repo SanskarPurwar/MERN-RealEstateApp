@@ -71,7 +71,7 @@ export const getListing = async (req,res,next)=>{
 
 export const filterListings = async (req,res,next)=>{
     try {
-        const limit = parseInt(req.query.limit) || 5;
+        const limit = parseInt(req.query.limit) || 9;
         const startIndex = parseInt(req.query.startIndex) || 0;
         let discount = req.query.discount;
         
