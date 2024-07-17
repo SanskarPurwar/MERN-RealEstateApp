@@ -2,12 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa6'
 import { useSelector } from 'react-redux';
 import ChatBox from '../components/ChatBox';
-// import io from 'socket.io-client';
-// import { BiSend } from 'react-icons/bi';
 import Chat from '../components/Chat';
 import { useNavigate } from 'react-router-dom';
-
-// const socket = io("http://localhost:3000");
 
 function MyChat() {
     const { currentUser } = useSelector(state => state.user);
