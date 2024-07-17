@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaFireExtinguisher, FaKitchenSet } from 'react-icons/fa6';
 import { PiBathtubFill, PiTelevisionFill } from 'react-icons/pi';
 import { BiSolidWasher, BiImageAdd, BiSolidFirstAid, BiWifi, BiSolidFridge, BiSolidDryer } from 'react-icons/bi';
@@ -164,12 +164,19 @@ function CreateListing() {
                 ? prevState.selectedPerks.filter(perk => perk !== perkName) 
                 : [...prevState.selectedPerks, perkName];
     
+                console.log('Updated selectedPerks:', newSelectedPerks);  
+
             return {
                 ...prevState,
                 selectedPerks: newSelectedPerks
             };
         });
     };
+
+    useEffect(() => {
+        console.log('Component re-rendered. FormData selectedPerks:', formData.selectedPerks);
+    }, [formData.selectedPerks]);
+    
     
 
     const handleChange = (e)=>{
