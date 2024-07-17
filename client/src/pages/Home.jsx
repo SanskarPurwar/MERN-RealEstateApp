@@ -140,7 +140,7 @@ function Home() {
 
   return (
     <main className='relative mx-0'>
-      <img className='w-full object-cover' src="/public/front.jpg" alt="" />
+      <img className='w-full object-cover' src="/front.jpg" alt="" />
       <div className='absolute top-2 left-8 xs:left-16 xs:top-6 sm:top-16 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl'>
     
         <span className='xxs:text-xl  sm:text-3xl md:text-4xl lg:text-5xl text-white text-center'>Experience</span>

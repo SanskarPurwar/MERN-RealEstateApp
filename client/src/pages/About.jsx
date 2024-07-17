@@ -25,7 +25,7 @@ function About() {
              
           </p>
         </div>
-        <img className='hidden sm:inline w-1/3 rounded-md lg:mr-14 object-cover' src="/public/myImage.jpg" alt="" />
+        <img className='hidden sm:inline w-1/3 rounded-md lg:mr-14 object-cover' src="/myImage.jpg" alt="" />
       </div>
 
 
