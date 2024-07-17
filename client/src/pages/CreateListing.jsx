@@ -141,21 +141,36 @@ function CreateListing() {
         }))
     }
 
-    const handlePerks = (index)=>{
-        if(formData.selectedPerks.includes(index)){
-            console.log("selected Perks",formData.selectedPerks)
-            setFormData({
-                ...formData,
-                selectedPerks:formData.selectedPerks.filter( (item)=>item!==index)
-            });
-        }else{
-            setFormData({
-                ...formData,
-                selectedPerks:[...formData.selectedPerks, index]
-            });
-            console.log("formData", formData.selectedPerks)
-        }
-    }
+    // const handlePerks = (index)=>{
+    //     if(formData.selectedPerks.includes(index)){
+    //         console.log("selected Perks",formData.selectedPerks)
+    //         setFormData({
+    //             ...formData,
+    //             selectedPerks:formData.selectedPerks.filter( (item)=>item!==index)
+    //         });
+    //     }else{
+    //         setFormData({
+    //             ...formData,
+    //             selectedPerks:[...formData.selectedPerks, index]
+    //         });
+    //         console.log("formData", formData.selectedPerks)
+    //     }
+    // }
+
+    const handlePerks = (perkName) => {
+        setFormData(prevState => {
+            const isSelected = prevState.selectedPerks.includes(perkName);
+            const newSelectedPerks = isSelected 
+                ? prevState.selectedPerks.filter(perk => perk !== perkName) 
+                : [...prevState.selectedPerks, perkName];
+    
+            return {
+                ...prevState,
+                selectedPerks: newSelectedPerks
+            };
+        });
+    };
+    
 
     const handleChange = (e)=>{
 
