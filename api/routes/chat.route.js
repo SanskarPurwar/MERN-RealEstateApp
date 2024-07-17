@@ -4,7 +4,7 @@ import {createChat, getChatArray, sendMessage, showConversation} from '../contro
 
 const router = express.Router();
 
-router.post('/createChat/:userId1/:userId2', verifyToken, createChat);
+router.post('/createChat', verifyToken, createChat);
 router.get('/getChatArray', verifyToken, getChatArray);
 router.post('/sendMessage/:chatId/:userId', verifyToken, sendMessage);
 router.get('/showConversation/:chatId', verifyToken, showConversation);

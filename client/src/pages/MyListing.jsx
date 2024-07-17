@@ -13,6 +13,7 @@ function MyListing() {
 
     const {userId} = useParams();
 
+    console.log(listingData)
     useEffect(() => {
 
         const myList = async () => {
@@ -31,7 +32,10 @@ function MyListing() {
                 const data = await response.json();
                 if (data.success === false) {
                     setError(data.message);
-                    console.log('Hi')
+                    return;
+                }
+                if(data.length === 0){
+                    setError("No Listing Found");
                     return;
                 }
                 setListingData(data)
@@ -71,11 +75,16 @@ function MyListing() {
 
     return (
         <div className='flex flex-col flex-wrap gap-6 place-content-center m-4'>
+
+            {!listingData &&
+                <p>No listing found</p>
+            }
+
             {errorDeletingListing &&
                 <p className='text-red-700 text-center bg-red-100 py-2 max-w-5xl mx-auto border border-red-600 rounded-xl'>{errorDeletingListing}</p>}
             {
                 error && 
-                <p>{error}</p>
+                <p className='text-red-500 text-center py-2 max-w-5xl mx-auto text-2xl'>{error}</p>
             }
             {listingData &&
                 listingData.map((item, index) => (

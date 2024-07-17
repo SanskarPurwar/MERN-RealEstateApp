@@ -4,18 +4,24 @@ import User from "../models/user.model.js";
 import { errorHandler } from "../utils/errors.js";
 
 export const createChat = async (req, res, next)=>{
-    const userId1 = req.params.userId1;
-    const userId2 = req.params.userId2;
+    const userId1 = req.body.currentUserId;
+    const userId2 = req.body.receiverId;
+    if(userId1 === userId2){
+        next(errorHandler(401 , `Cann't chat yourSelf`))
+        return;
+    }
 
-    const isPresent = await Chat.find({userIds: { $all : [userId1 , userId2]}});
-    if(isPresent){
-        is
+    const isPresent = await Chat.find({userIds: { $all : [userId1 , userId2]}}).populate('userIds', 'username avatar').populate("messages");
+    console.log("isPresent", isPresent);
+    if(isPresent.length !== 0){
+        res.status(200).json(isPresent);
+        return;
     }
 
     try {
         const chat = await Chat.create({
             userIds:[userId1 , userId2],
-        })
+        }).populate('userIds', 'username avatar');
         if(!chat){
             return next(errorHandler(401, `Chat cann't be created`));
         }
@@ -31,7 +37,6 @@ export const createChat = async (req, res, next)=>{
 
 export const getChatArray = async (req, res, next)=>{
     const userId = req.user.id;
-    console.log(userId)
     try {
         const userAllChats = await Chat.find({userIds:{ $in : [userId] }}).populate('userIds');
         if(!userAllChats){
@@ -47,7 +52,6 @@ export const sendMessage = async (req, res, next)=>{
     const chatId = req.params.chatId;
     const message = req.body.message;
     const userId = req.params.userId;
-    console.log('chatId',chatId, 'userId', userId);
     try {
         const newMessage = await Message.create({chatId , userId , message});
         await Chat.findByIdAndUpdate(chatId , {

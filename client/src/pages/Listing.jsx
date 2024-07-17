@@ -7,7 +7,7 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
 import { FaArrowLeft, FaLocationPin, FaShare } from 'react-icons/fa6';
 import { GiSofa } from 'react-icons/gi';
-import { BiHeart,  BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
+import { BiHeart, BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserSuccess } from '../redux/user/userSlice';
 import ChatBox from '../components/ChatBox';
@@ -21,14 +21,12 @@ function Listing() {
 
     SwiperCore.use([Navigation]);
     const params = useParams();
-    const listingId = params.listingId;
     const [copied, setCopied] = useState(false);
     const [needLogIn, setNeedLogin] = useState(false);
     const [showChats, setShowChats] = useState(false);
-    const [openChat, setOpenChat] = useState(false);
     const [chatConversation, setChatConversation] = useState(null);
-    const users = chatConversation?.userIds;
-    const receiver = users?.filter((item) => item._id !== currentUser._id);
+    const [users, setUsers] = useState(null);
+    const [receiver, setReceiver] = useState(null);
 
     const [formData, setFormData] = useState({
         userRef: '',
@@ -61,7 +59,6 @@ function Listing() {
                     console.log(data.message);
                     return;
                 }
-                console.log(data);
                 setFormData(data);
                 setLoading(false);
                 return;
@@ -114,51 +111,31 @@ function Listing() {
             setShowChats(false);
             return;
         }
+        setShowChats(false);
         try {
-            const response = await fetch(`/api/chats/createChat/${currentUser._id}/${formData.userRef}`, {
+            const response = await fetch(`/api/chats/createChat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                body: JSON.stringify({ "currentUserId": currentUser._id, "receiverId": formData.userRef })
             });
             const data = await response.json();
             if (data.success === false) {
                 console.log('error ', data.message);
                 return;
             }
-            setAllChats(data);
+            setChatConversation(data);
+            setReceiver(data[0].userIds.filter((user) => user._id !== currentUser._id))
             setShowChats(true);
         } catch (error) {
             console.log(error);
         }
     }
 
-    const handleChatConversation = async (chatId) => {
-        setOpenChat(false);
-        try {
-            const response = await fetch(`/api/chats/showConversation/${chatId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            const data = await response.json();
-            if (data.success === false) {
-                console.log(data.message);
-                return;
-            }
-            setOpenChat(true);
-            setChatConversation(data);
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-
-
     return (
         <main className='m-4'>
+
             {!loading && formData && (
                 <>
                     <div className={`border rounded-lg ${showChats ? 'blur-sm' : ''}`}>
@@ -246,19 +223,18 @@ function Listing() {
 
                     </div>
 
-                    {
-                        showChats && chatConversation &&
-                        <div className='fixed left-1/4 top-20 bg-slate-100 z-50 h-5/6 w-1/2 overflow-x-auto' >
-                            <div className='flex items-center justify-between bg-blue-200'>
-                                <FaArrowLeft onClick={()=>setOpenChat(openChat=>!openChat)} className='text-xl text-blue-500 cursor-pointer'/>
-                                <p className='w-full text-center text-2xl font-semibold text-blue-500'>{receiver[0].username}</p>
-                                <img className='rounded-full w-11 h-11' src={receiver[0].avatar} alt="" />
+                    {showChats &&
+                        <div className='fixed bg-slate-100 right-12  sm:right-10 top-20 bottom-10 z-40 w-2/3 sm:w-1/3 overflow-x-auto rounded-md' >
+                            <div className='fixed flex items-center justify-between bg-gray-300 w-2/3 sm:w-1/3 rounded-md'>
+                                <img className='hidden sm:inline rounded-full w-11 h-11' src={receiver[0].avatar} alt="" />
+                                <p className='w-full text-center text-sm md:text-lg lg:text-3xl font-semibold text-'>Message {receiver[0].username}</p>
+                                <p onClick={() => setShowChats(showChats => !showChats)} className='text-3xl text-red-500 cursor-pointer font-semibold p-2'>X</p>
+                                {/* <FaArrowLeft onClick={() => setShowChats(openConversation => !openConversation)} className='text-xl text-blue-500 cursor-pointer' /> */}
                             </div>
 
-                            <Chat chatConversation={chatConversation}/>
+                            <Chat chatConversation={chatConversation[0]} listing={true} />
                         </div>
                     }
-
                 </>
 
             )}

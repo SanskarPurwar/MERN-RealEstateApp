@@ -24,8 +24,6 @@ function MyChat() {
 
     }
 
-
-
     useEffect(() => {
 
         const showChats = async (req, res, next) => {
@@ -67,12 +65,12 @@ function MyChat() {
             }
             setOpenConversation(true);
             setChatConversation(data);
-
         } catch (error) {
             console.log(error);
         }
     }
-
+    
+    console.log("My chat",chatConversation)
     return (
         <div className='bg-sky-100 h-lvh mt-16 w-fullplace ' >
             <div className='flex items-center w-full bg-blue-200 p-1'>
@@ -94,7 +92,7 @@ function MyChat() {
                         <img className='rounded-full w-11 h-11' src={receiver[0].avatar} alt="" />
                     </div>
 
-                    <Chat chatConversation={chatConversation} />
+                    <Chat chatConversation={chatConversation} listing={false}/>
                 </div>
             }
         </div>
