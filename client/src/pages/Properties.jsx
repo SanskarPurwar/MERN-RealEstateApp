@@ -17,6 +17,8 @@ function Properties() {
   const [showFilter, setShowFilter] = useState(false);
   const [needLogIn, setNeedLogin] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const [filterData, setFilterData] = useState({
     searchData: '',
@@ -30,7 +32,7 @@ function Properties() {
   });
 
   useEffect(() => {
-
+    setLoading(true);
     const url = new URLSearchParams(location.search);
     const searchData = url.get('searchData');
     const type = url.get('type');
@@ -55,7 +57,7 @@ function Properties() {
     }
 
     const filterListingsFunction = async () => {
-
+      
       try {
         const url_updated = url.toString();
         const response = await fetch(`/api/listing/filterLists?${url_updated}`, {
@@ -66,18 +68,21 @@ function Properties() {
         });
         const data = await response.json();
         if (data.success === false) {
+          setLoading(false)
           return;
         }
         if (data.length >= 9) {
           setShowMore(true);
-
+          
         } else {
           setShowMore(false);
-
+          
         }
+        setLoading(false)
         setFilterListings(data);
       } catch (error) {
         console.log(error);
+        setLoading(false)
         return;
       }
     }
@@ -247,7 +252,12 @@ function Properties() {
       </header>
 
       {
-        (filterListings.length === 0) &&
+        loading &&
+        <p className='text-center text-2xl text-red-500'>Loading...</p>
+
+      }
+      {
+        (!loading && filterListings.length === 0) &&
         <p className='text-center text-2xl text-red-500'>No properties exist related to this search</p>
       }
 
