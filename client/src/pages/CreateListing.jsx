@@ -303,7 +303,7 @@ function CreateListing() {
                             perks?.map((item , index)=>(
                                 <div key={item.name}
                                 className={`flex flex-col bg-sky-50 border border-sky-500 rounded-lg items-center w-28 m-1.5 cursor-pointer
-                                  ${formData.selectedPerks.includes(item.name) ? 'bg-sky-200': 'hover:bg-sky-100'}`}
+                                  ${formData.selectedPerks.includes(item.name) ? 'bg-sky-300': 'hover:bg-sky-100'}`}
                                     onClick={()=>handlePerks(item.name)}>
                                 {item.icon}
                                 <p className='text-sm mb-1'>{item.name}</p>
