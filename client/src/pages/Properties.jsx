@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { GiSofa } from 'react-icons/gi';
-import { BiDownArrow, BiHeart, BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaLocationPin, FaShare } from 'react-icons/fa6';
+import { BiDownArrow, BiHeart, BiSolidHeart } from 'react-icons/bi';
+import {  useNavigate } from 'react-router-dom';
+import { FaShare } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserSuccess } from '../redux/user/userSlice';
 import Card from '../components/Card';
