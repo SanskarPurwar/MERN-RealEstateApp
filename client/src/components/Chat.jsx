@@ -56,7 +56,7 @@ function Chat({ chatConversation: chatConversation, listing }) {
             </div>
             <form className={`${listing ? 'w-2/3 sm:w-1/3 bottom-10' : 'w-full bottom-0'} fixed flex items-center`} onSubmit={handleSendMessage}>
                     <input className="bg-slate-200 text-sm rounded-md outline-none flex-grow py-2" value={text} onChange={handleChange} type="text" name="message" id="message" />
-                    <button>
+                    <button type='submit'>
                         <BiSend className="text-md sm:text-2xl cursor-pointer mr-3"/>
                     </button>
             </form>
