@@ -141,41 +141,21 @@ function CreateListing() {
         }))
     }
 
-    // const handlePerks = (index)=>{
-    //     if(formData.selectedPerks.includes(index)){
-    //         console.log("selected Perks",formData.selectedPerks)
-    //         setFormData({
-    //             ...formData,
-    //             selectedPerks:formData.selectedPerks.filter( (item)=>item!==index)
-    //         });
-    //     }else{
-    //         setFormData({
-    //             ...formData,
-    //             selectedPerks:[...formData.selectedPerks, index]
-    //         });
-    //         console.log("formData", formData.selectedPerks)
-    //     }
-    // }
-
-    const handlePerks = (perkName) => {
-        setFormData(prevState => {
-            const isSelected = prevState.selectedPerks.includes(perkName);
-            const newSelectedPerks = isSelected 
-                ? prevState.selectedPerks.filter(perk => perk !== perkName) 
-                : [...prevState.selectedPerks, perkName];
-    
-                console.log('Updated selectedPerks:', newSelectedPerks);  
-
-            return {
-                ...prevState,
-                selectedPerks: newSelectedPerks
-            };
-        });
-    };
-
-    useEffect(() => {
-        console.log('Component re-rendered. FormData selectedPerks:', formData.selectedPerks);
-    }, [formData.selectedPerks]);
+    const handlePerks = (index)=>{
+        if(formData.selectedPerks.includes(index)){
+            console.log("selected Perks",formData.selectedPerks)
+            setFormData({
+                ...formData,
+                selectedPerks:formData.selectedPerks.filter( (item)=>item!==index)
+            });
+        }else{
+            setFormData({
+                ...formData,
+                selectedPerks:[...formData.selectedPerks, index]
+            });
+            console.log("formData", formData.selectedPerks)
+        }
+    }
     
     
 
@@ -309,8 +289,7 @@ function CreateListing() {
                         {
                             perks?.map((item , index)=>(
                                 <div key={item.name}
-                                className={`flex flex-col bg-sky-50 border border-sky-500 rounded-lg items-center w-28 m-1.5 cursor-pointer
-                                  ${formData.selectedPerks.includes(item.name) ? 'bg-sky-300': 'hover:bg-sky-100'}`}
+                                className={`${formData.selectedPerks.includes(item.name) ? 'bg-sky-200': 'hover:bg-sky-100 bg-sky-50'} flex flex-col border rounded-lg items-center w-28 m-1.5 cursor-pointer border-sky-500`}
                                     onClick={()=>handlePerks(item.name)}>
                                 {item.icon}
                                 <p className='text-sm mb-1'>{item.name}</p>
