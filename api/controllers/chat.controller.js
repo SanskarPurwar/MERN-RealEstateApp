@@ -12,25 +12,25 @@ export const createChat = async (req, res, next)=>{
     }
 
     const isPresent = await Chat.find({userIds: { $all : [userId1 , userId2]}}).populate('userIds', 'username avatar').populate("messages");
-    console.log("isPresent", isPresent);
-    if(isPresent.length !== 0){
+    if(isPresent.length > 0){
         res.status(200).json(isPresent);
         return;
     }
-
     try {
         const chat = await Chat.create({
             userIds:[userId1 , userId2],
-        }).populate('userIds', 'username avatar');
+        });
         if(!chat){
             return next(errorHandler(401, `Chat cann't be created`));
         }
-
-        await User.findByIdAndUpdate(userId1, {$push : {chatId:chat._id} });
-        await User.findByIdAndUpdate(userId2, {$push : {chatId:chat._id} });
+        console.log(chat);
+        const userA = await User.findByIdAndUpdate(userId1, {$push : {chatId:chat._id} });
+        const userB = await User.findByIdAndUpdate(userId2, {$push : {chatId:chat._id} });
+        console.log(userA , "       ", userB);
 
         res.status(200).json(chat);
     } catch (error) {
+        console.log(error);
         res.status(500 , `Error creating chat ${error}`)
     }
 }
