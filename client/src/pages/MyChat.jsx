@@ -81,8 +81,8 @@ function MyChat() {
             }
 
             {openConversation &&
-                <div className='fixed bg-slate-100 z-50 w-full top-1/3 h-2/3 overflow-x-auto' >
-                    <div className='fixed w-full flex items-center justify-between bg-blue-200 z-50'>
+                <div className='fixed bg-slate-100 w-full top-1/3 h-2/3 overflow-x-auto' >
+                    <div className='fixed w-full flex items-center justify-between bg-blue-200'>
                         <FaArrowLeft onClick={() => setOpenConversation(openConversation => !openConversation)} className='text-xl text-blue-500 cursor-pointer' />
                         <p className='w-full text-center text-2xl font-semibold text-blue-500'>{receiver[0].username}</p>
                         <img className='rounded-full w-11 h-11' src={receiver[0].avatar} alt="" />

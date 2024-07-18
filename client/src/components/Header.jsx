@@ -69,7 +69,7 @@ function Header() {
 
         </div>
         {openProfile && 
-                <ul className="absolute xxs:right-0 top-12 sm:right-0 flex flex-col gap-2 transform ease-in-out duration-1000 bg-blue-200 text-blue-800 p-2 font-semibold border border-none rounded-lg z-30 outline-none">
+                <ul className="absolute xxs:right-0 top-12 sm:right-0 flex flex-col gap-2 transform ease-in-out duration-1000 bg-blue-200 text-blue-800 p-2 font-semibold border border-none rounded-lg z-50 outline-none">
                   <Link to={'/profile'}>
                   <li className="cursor-pointer w-full hover:bg-blue-100 px-8 sm:px-12 md:px-16 py-2 border border-none rounded-lg">My Profile</li>
                   </Link>

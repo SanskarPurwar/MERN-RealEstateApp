@@ -3,7 +3,7 @@ import { BiSend } from 'react-icons/bi';
 import { useSelector } from 'react-redux';
 import io from 'socket.io-client';
 
-const socket = io("http://localhost:3000");
+const socket = io(`https://heavennest.onrender.com`);
 
 function Chat({ chatConversation: chatConversation, listing }) {
     const [chat, setChat] = useState(chatConversation);
