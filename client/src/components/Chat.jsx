@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { BiSend } from 'react-icons/bi';
 import { useSelector } from 'react-redux';
 import io from 'socket.io-client';
@@ -10,7 +10,18 @@ function Chat({ chatConversation: chatConversation, listing }) {
     const { currentUser } = useSelector(state => state.user);
     const [text, setText] = useState("");
 
-    console.log("Chat", chat);
+
+    const messagesEndRef = useRef(null);
+    const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [chat.messages]);
+
 
     const handleChange = (e) => {
         setText(e.target.value);
@@ -53,6 +64,7 @@ function Chat({ chatConversation: chatConversation, listing }) {
                         <div key={item._id} className={`${item.userId === currentUser._id ? 'bg-green-200 w-fit self-end' : 'self-start bg-blue-200 w-fit'} p-2 rounded-md text-xs sm:text-sm lg:text-lg`}>{item.message}</div>
                     ))
                 }
+                <div ref={messagesEndRef} />
             </div>
             <form className={`${listing ? 'w-2/3 sm:w-1/3 bottom-10' : 'w-full bottom-0'} fixed flex items-center`} onSubmit={handleSendMessage}>
                     <input className="bg-slate-200 text-sm rounded-md outline-none flex-grow py-2" value={text} onChange={handleChange} type="text" name="message" id="message" />
