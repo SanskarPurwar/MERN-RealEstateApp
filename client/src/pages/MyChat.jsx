@@ -66,7 +66,6 @@ function MyChat() {
         }
     }
     
-    console.log("My chat",chatConversation)
     return (
         <div className='bg-sky-100 h-lvh mt-16 w-fullplace ' >
             <div className='flex items-center w-full bg-blue-200 p-1'>

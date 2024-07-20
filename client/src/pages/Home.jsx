@@ -100,7 +100,6 @@ function Home() {
       const data2 = await response2.json();
       const data3 = await response3.json();
       const data4 = await response4.json();
-      console.log(data1)
       if (data1.success === false) {
         setErrorAscPriceSell(data1.message);
       } else {

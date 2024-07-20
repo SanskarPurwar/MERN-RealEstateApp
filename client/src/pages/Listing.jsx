@@ -5,12 +5,11 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
-import { FaArrowLeft, FaLocationPin, FaShare } from 'react-icons/fa6';
+import { FaLocationPin, FaShare } from 'react-icons/fa6';
 import { GiSofa } from 'react-icons/gi';
 import { BiHeart, BiSolidBath, BiSolidBed, BiSolidHeart } from 'react-icons/bi';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUserSuccess } from '../redux/user/userSlice';
-import ChatBox from '../components/ChatBox';
 import Chat from '../components/Chat';
 
 function Listing() {

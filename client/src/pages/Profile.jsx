@@ -22,10 +22,6 @@ function Profile() {
   const [errorDeletingListing, setErrorDeletingListing] = useState(false);
   const [deletingListing, setDeletingListing] = useState(false);
 
-
-  console.log(formData);
-
-
   const handleChange = (e) => {
     setFormData({
       ...formData,

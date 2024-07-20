@@ -9,7 +9,6 @@ function Header() {
   const navigate = useNavigate();
   const [openProfile, setOpenProfile] = useState(false);
   const dispatch = useDispatch();
-  console.log(user);
   const handleProfile = ()=>{
     setOpenProfile((openProfile)=>!openProfile);
   } 

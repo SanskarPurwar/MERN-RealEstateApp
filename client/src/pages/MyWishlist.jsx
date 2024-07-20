@@ -46,12 +46,10 @@ function MyWishlist() {
                     )
                 );
                 const data = await Promise.all(responses.map((response) => response.json()));
-                console.log(data)
 
                 const successfulListings = data.filter((item) => item.success !== false);
 
                 setListing(successfulListings);
-                console.log(data);
             } catch (error) {
                 console.error('Failed to fetch listings', error);
             }
