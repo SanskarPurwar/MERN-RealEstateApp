@@ -107,3 +107,12 @@ export const signOut = async (req , res , next)=>{
         next(error);
       }
 }
+
+export const checkAuth = async (req, res, next)=>{
+    const userId = req.params.userId;
+    if(req.user._id !== userId){
+        next(errorHandler(401, 'User not verified'));
+        return;
+    }
+    res.status(200).json('user Verified');
+}

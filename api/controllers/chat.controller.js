@@ -7,7 +7,7 @@ export const createChat = async (req, res, next)=>{
     const userId1 = req.body.currentUserId;
     const userId2 = req.body.receiverId;
     if(userId1 === userId2){
-        next(errorHandler(401 , `Cann't chat yourSelf`))
+        next(errorHandler(403 , `Cann't chat yourSelf`))
         return;
     }
 
